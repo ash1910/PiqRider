@@ -79,18 +79,12 @@ export default function TabLayout() {
       <Tabs.Screen
         name="account"
         options={{
-          title: 'Account',
+          title: 'Profile',
           tabBarIcon: ({ color }) => <AccountIcon size={25} color={color} />,
         }}
       />
       <Tabs.Screen
         name="notification"
-        options={{
-          href: null,
-        }}
-      />
-      <Tabs.Screen
-        name="orderDetail"
         options={{
           href: null,
         }}

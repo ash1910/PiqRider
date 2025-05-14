@@ -115,7 +115,7 @@ export default function SafetyScreen() {
               <Text style={styles.title}>Hi John Doe</Text>
             </View>
           </View>
-          <Text style={styles.subtitle}>Here's what you need to know about safety</Text>
+          <Text style={styles.subtitle}>Your safety guide for Piqdrop and real life — tips and answers, all in one place.</Text>
 
           <View style={styles.tabContainer}>
             {/* Tab Bar */}
@@ -147,7 +147,7 @@ export default function SafetyScreen() {
                     <Image source={require('@/assets/icons/check_id.png')} style={styles.successImage} />
                     <View style={styles.successTextContainer}>
                       <Text style={styles.successText}>Check ID</Text>
-                      <Text style={styles.successDescription}>Check the ID card or passport of the dropper before giving them your items, make sure it matches with the profile on the platform.</Text>
+                      <Text style={styles.successDescription}>Always carry your ID card or passport when making drops. The sender will verify your identity to ensure it matches your profile on the platform.</Text>
                     </View>
                   </View>
                 </View>
@@ -156,7 +156,25 @@ export default function SafetyScreen() {
                     <Image source={require('@/assets/icons/carefull.png')} style={styles.successImage} />
                     <View style={styles.successTextContainer}>
                       <Text style={styles.successText}>Careful</Text>
-                      <Text style={styles.successDescription}>Take a selfie with your dropper if possible. it's easier to identify your dropper if anything should happen, however, don't post the picture or use it for any other purpose without the permission of the dropper, After your items have been dropped you are obligated to delete the photo, failure to do so might have consequences.</Text>
+                      <Text style={styles.successDescription}>Be prepared to take a selfie with the sender if requested. This helps with identification and safety. The sender must delete the photo after the drop is completed, and they cannot use it for any other purpose without your permission.</Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.notificationContainer}>
+                  <View style={styles.successContainer}> 
+                    <Image source={require('@/assets/icons/awarness.png')} style={styles.successImage} />
+                    <View style={styles.successTextContainer}>
+                      <Text style={styles.successText}>Awareness</Text>
+                      <Text style={styles.successDescription}>Be aware of your surrounding. take note of any vehicles that may be following you.</Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.notificationContainer}>
+                  <View style={styles.successContainer}> 
+                    <Image source={require('@/assets/icons/afterhours.png')} style={styles.successImage} />
+                    <View style={styles.successTextContainer}>
+                      <Text style={styles.successText}>Afterhours</Text>
+                      <Text style={styles.successDescription}>Don’t pick items at night if possible. Becareful not to meet at night.</Text>
                     </View>
                   </View>
                 </View>
@@ -165,16 +183,25 @@ export default function SafetyScreen() {
                     <Image source={require('@/assets/icons/scammers.png')} style={styles.successImage} />
                     <View style={styles.successTextContainer}>
                       <Text style={styles.successText}>Scammers</Text>
-                      <Text style={styles.successDescription}>scammers are upping their game, we will never call you out of the blue to ask for you card PIN, bank details, full password, account secure access code the ccv (3 digits) on the back of your card, account (Micr) number and personal information. Be vigilant!</Text>
+                      <Text style={styles.successDescription}>Stay alert for scams! PiqDrop will never call you unexpectedly to request your card PIN, bank details, passwords, secure access codes, CVV numbers, or any personal information. All payments are processed securely through our platform.</Text>
                     </View>
                   </View>
                 </View>
                 <View style={styles.notificationContainer}>
                   <View style={styles.successContainer}> 
-                    <Image source={require('@/assets/icons/payment.png')} style={styles.successImage} />
+                    <Image source={require('@/assets/icons/caution.png')} style={styles.successImage} />
                     <View style={styles.successTextContainer}>
-                      <Text style={styles.successText}>Payment</Text>
-                      <Text style={styles.successDescription}>Never pay offline or move money to another account. Our payment system is built to protect our users. </Text>
+                      <Text style={styles.successText}>Caution</Text>
+                      <Text style={styles.successDescription}>Prevention is better than cure if you notice or see red flags leave. Your life is valuable. </Text>
+                    </View>
+                  </View>
+                </View>
+                <View style={styles.notificationContainer}>
+                  <View style={styles.successContainer}> 
+                    <Image source={require('@/assets/icons/protocol.png')} style={styles.successImage} />
+                    <View style={styles.successTextContainer}>
+                      <Text style={styles.successText}>Protocol</Text>
+                      <Text style={styles.successDescription}>Never deliver to a hotel or motel room; only deliver to the main desk or call the sender to come to the main desk!</Text>
                     </View>
                   </View>
                 </View>

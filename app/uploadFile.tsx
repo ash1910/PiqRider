@@ -142,7 +142,7 @@ export default function UploadFileScreen() {
 
         <View style={styles.form}>
           <Text style={styles.label}>Upload ID <Text style={styles.requiredRedStar}>*</Text></Text>
-          <Text style={styles.labelSubtitle}>We're required to ask you for some documents to sign you as a sender. Documents scans and quality photos are accepted.</Text>
+          <Text style={styles.labelSubtitle}>We're required to ask you for some documents to sign you as a Dropper. Documents scans and quality photos are accepted.</Text>
           <TouchableOpacity 
             style={styles.inputContainer}
             onPress={() => setShowImageOptions(true)}

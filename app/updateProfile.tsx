@@ -61,7 +61,7 @@ export default function UpdateProfileScreen() {
   const [lastName, setLastName] = useState('Doe');
   const [email, setEmail] = useState('john.doe@example.com');
   const [gender, setGender] = useState('Male');
-  const [nationality, setNationality] = useState('Swedish');
+  const [nationality, setNationality] = useState('Sweden');
   const [showPicker, setShowPicker] = useState(false);
   const [pickerType, setPickerType] = useState<'nationality' | 'gender'>('nationality');
   

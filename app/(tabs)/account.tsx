@@ -26,6 +26,8 @@ import { TrashBinMinimalistic2Icon } from '@/components/icons/TrashBinMinimalist
 import { LogoutIcon } from '@/components/icons/LogoutIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { LocationIcon } from '@/components/icons/LocationIcon';
+import { SettingsIcon } from '@/components/icons/SettingsIcon';
+import { FeedbackIcon } from '@/components/icons/FeedbackIcon';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
@@ -261,6 +263,14 @@ export default function AccountScreen() {
                   <RightArrowIcon size={20} color={COLORS.text} />
                 </View>
               </TouchableOpacity>
+              <View style={styles.divider} />
+              <TouchableOpacity style={styles.row} onPress={() => router.push('/safety')}>
+                <View style={styles.rowLeft}>
+                  <SettingsIcon size={22} color={COLORS.text} />
+                  <Text style={styles.rowLabel}>Settings</Text>
+                </View>
+                <RightArrowIcon size={20} color={COLORS.text} />
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -273,7 +283,7 @@ export default function AccountScreen() {
               <TouchableOpacity style={styles.row}>
                 <View style={styles.rowLeft}>
                   <WalletIcon size={20} color={COLORS.text} />
-                  <Text style={styles.rowLabel}>Payment</Text>
+                  <Text style={styles.rowLabel}>Wallet</Text>
                 </View>
                 <RightArrowIcon size={20} color={COLORS.text} />
               </TouchableOpacity>
@@ -386,6 +396,14 @@ export default function AccountScreen() {
                 <View style={styles.rowLeft}>
                   <ShareIcon size={20} color={COLORS.text} />
                   <Text style={styles.rowLabel}>Share app</Text>
+                </View>
+                <RightArrowIcon size={20} color={COLORS.text} />
+              </TouchableOpacity>
+              <View style={styles.divider} />
+              <TouchableOpacity style={styles.row} onPress={() => router.push('/report')}>
+                <View style={styles.rowLeft}>
+                  <FeedbackIcon size={20} color={COLORS.text} /> 
+                  <Text style={styles.rowLabel}>Feedback</Text>
                 </View>
                 <RightArrowIcon size={20} color={COLORS.text} />
               </TouchableOpacity>

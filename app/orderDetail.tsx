@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Image, KeyboardAvoidingView, Platform, Keyboard, StatusBar, Dimensions } from 'react-native';
-import { router } from 'expo-router';
-import Animated, {
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, KeyboardAvoidingView, Platform, Keyboard, StatusBar, Dimensions } from 'react-native';
+import Modal from 'react-native-modal';
+import { ThemedView } from '@/components/ThemedView';
+import Svg, { Path } from 'react-native-svg';
+import { router } from 'expo-router'; 
+import Animated, { 
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
@@ -71,6 +74,8 @@ export default function SafetyScreen() {
   const [dropoffCoords, setDropoffCoords] = useState<Coordinates | null>(null);
   const [mapDeltas, setMapDeltas] = useState({ latitudeDelta: 0.05, longitudeDelta: 0.05 });
   const [mapCenter, setMapCenter] = useState<Coordinates | null>(null);
+  const [modalOrderAcceptedVisible, setModalOrderAcceptedVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -212,10 +217,10 @@ export default function SafetyScreen() {
             <View style={styles.orderSummaryRow}>
               <View style={styles.orderSummaryUserRow}>
                 <View style={styles.userAvatar} />
-                <Text style={styles.orderSummaryUserName}>Jhon doe</Text>
+                <Text style={styles.orderSummaryUserName}>Marvin McKinney</Text>
               </View>
               <View style={styles.orderSummaryPriceBox}>
-                <Text style={styles.orderSummaryPrice}>$200.00</Text>
+                <Text style={styles.orderSummaryPrice}>$20.00</Text>
               </View>
             </View>
           </View>
@@ -285,6 +290,69 @@ export default function SafetyScreen() {
           </View>
         </View>
       </Animated.ScrollView>
+      <ThemedView style={styles.buttonBackgroundContainer}> 
+        <TouchableOpacity 
+          style={styles.buttonContainer}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.buttonText}>Take order!</Text>
+        </TouchableOpacity>
+      </ThemedView>
+
+      <Modal
+        onSwipeComplete={() => setModalVisible(false)}
+        swipeDirection="down"
+        isVisible={modalVisible}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalToggleButton}></View>
+            <Text style={styles.modalTitle}>Order Confirmation</Text>
+            {/* Order Summary Card */}
+            <View style={styles.orderSummaryCard}>
+              <View style={styles.orderSummaryRow}>
+                <View style={styles.orderSummaryUserRow}>
+                  <View style={styles.userAvatar} />
+                  <View style={styles.orderSummaryUserColumn}>
+                    <Text style={styles.orderSummaryUserName}>Marvin McKinney</Text>
+                    <View style={styles.orderSummaryPriceBox}>
+                      <Text style={styles.orderSummaryPrice}>$20.00</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.pickupDetailsRow}>
+              <Text style={styles.pickupDetailsLabel}>From:</Text>
+              <Text style={styles.pickupDetailsValue}>Germany, Berlin, Danziger Str.12A 10435, BE DEU</Text>
+            </View>
+            <View style={styles.pickupDetailsRow}>
+              <Text style={styles.pickupDetailsLabel}>To:</Text>
+              <Text style={styles.pickupDetailsValue}>Sweden, Gothenburg, Långströmsgatan 7, 41870.</Text>
+            </View>
+            <View style={styles.pickupDetailsRow}>
+              <Text style={styles.pickupDetailsLabel}>Date:</Text>
+              <Text style={styles.pickupDetailsValue}>11 apr 2025</Text>
+            </View>
+
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={[styles.loginButton, {backgroundColor: '#E6E6E6'}]} onPress={() => setModalVisible(false)}>
+                <Text style={[styles.loginText, {color: COLORS.text}]}>Back</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.loginButton, { marginBottom: 14}]} onPress={() => {
+                setModalVisible(false);
+                router.push('/(tabs)/manage');
+              }}>
+                <Text style={styles.loginText}>Yes Confirm !</Text>
+              </TouchableOpacity>
+            </View>
+
+
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -462,5 +530,104 @@ const styles = StyleSheet.create({
     height: 220,
     overflow: 'hidden',
     marginTop: -20,
+  },
+  buttonBackgroundContainer: {
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    padding: 10,
+    paddingHorizontal: 16,
+    paddingBottom: 28,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: 54,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    alignSelf: 'stretch',
+    borderRadius: 14,
+    backgroundColor: '#55B086',   
+  },
+  buttonText: {
+    color: '#FFF',
+    fontFamily: 'NunitoBold',
+    fontSize: 17, 
+    letterSpacing: 0.2,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: COLORS.background,
+    borderTopLeftRadius: 33,
+    borderTopRightRadius: 33,
+    paddingHorizontal: 30,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  modalOption: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
+    flexDirection: 'row',
+    gap: 15,
+    alignItems: 'center'
+  },
+  modalOptionText: {
+    fontSize: 16,
+    fontFamily: 'nunito-semibold',
+    color: COLORS.text,
+    letterSpacing: 0.2,
+    lineHeight: 54,
+    flex: 1,
+  },
+  orderSummaryUserColumn: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 4,
+  },
+  modalTitle: {
+    fontFamily: 'nunito-extrabold',
+    fontSize: 18,
+    color: COLORS.text,
+    letterSpacing: 0.2,
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  modalButtonContainer: {
+    paddingTop: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  loginButton: {
+    backgroundColor: COLORS.primary,
+    height: 54,
+    padding: 10,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  loginText: {
+    color: COLORS.buttonText,
+    fontFamily: 'nunito-bold',
+    fontSize: 16,
+    letterSpacing: 0.2,
+  },
+  modalToggleButton: {
+    width: 50,
+    height: 5,
+    backgroundColor: '#E3E6EC',
+    borderRadius: 16,
+    marginBottom: 22,
+    alignSelf: 'center',
   },
 });

@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "PiqDrop",
-    "slug": "piqdrop",
+    "name": "PiqRider",
+    "slug": "piqrider",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icons/ios-dark.png",
-    "scheme": "piqdrop",
+    "scheme": "piqrider",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "cli": {
@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.amarhaor2.app",
+      "bundleIdentifier": "com.amarhaor3.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location to show your current location on the map.",
@@ -32,7 +32,7 @@
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#55B086"
       },
-      "package": "com.ashraful1910.piqdrop"
+      "package": "com.amarhaor3.app"
     },
     "web": {
       "bundler": "metro",
@@ -66,8 +66,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "f4e2a653-4467-4908-8aba-ce3b2ef4015d"
+        "projectId": "20c70ee0-0d22-46f4-b156-6a571fb714a5"
       }
-    }
+    },
+    "owner": "ashraful1910"
   }
 }

@@ -35,7 +35,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="getStarted" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="otpVerification" options={{ headerShown: false }} />
@@ -50,6 +49,8 @@ export default function RootLayout() {
         <Stack.Screen name="safety" options={{ headerShown: false }} />
         <Stack.Screen name="report" options={{ headerShown: false }} />
         <Stack.Screen name="faq" options={{ headerShown: false }} />
+        <Stack.Screen name="supportService" options={{ headerShown: false }} />
+        <Stack.Screen name="orderDetail" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
