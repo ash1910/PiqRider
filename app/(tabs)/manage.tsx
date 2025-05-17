@@ -32,7 +32,7 @@ const TAB_WIDTH = (screenWidth - 32 - 8) / TABS.length;
 
 const COLORS = {
   primary: '#55B086',
-  danger: '#FF4949',
+  danger: '#FF693B',
   background: '#FFFFFF',
   backgroundWrapper: '#F5F5F5',
   buttonBackground: '#EEEEEE',
