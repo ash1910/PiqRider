@@ -264,7 +264,7 @@ export default function AccountScreen() {
                 </View>
               </TouchableOpacity>
               <View style={styles.divider} />
-              <TouchableOpacity style={styles.row} onPress={() => router.push('/safety')}>
+              <TouchableOpacity style={styles.row} onPress={() => router.push('/setting')}>
                 <View style={styles.rowLeft}>
                   <SettingsIcon size={22} color={COLORS.text} />
                   <Text style={styles.rowLabel}>Settings</Text>

@@ -1,39 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, Image, StyleSheet, StatusBar,KeyboardAvoidingView, Platform, Modal, Keyboard, ActivityIndicator, Pressable, Dimensions } from 'react-native';
-import { Checkbox } from 'react-native-paper';
+import { View, Text, TextInput, FlatList, TouchableOpacity, Image, StyleSheet, StatusBar,KeyboardAvoidingView, Platform, Modal, Keyboard, ActivityIndicator, Pressable, Dimensions } from 'react-native';
 import { router } from 'expo-router';
-import CountryPicker, { Country, getCallingCode } from 'react-native-country-picker-modal';
 import MapView, { Marker, Region } from 'react-native-maps';
 import * as Location from 'expo-location';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-import { FontAwesome, Feather, MaterialIcons } from '@expo/vector-icons';
 import Animated, {
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
-  useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
 
 import { BellIcon } from '@/components/icons/BellIcon';
-import { UserRoundedIcon } from '@/components/icons/UserRoundedIcon';
-import { SelectDownArrowIcon } from '@/components/icons/SelectDownArrowIcon';
-import { WeightIcon } from '@/components/icons/WeightIcon';
-import { MoneyIcon } from '@/components/icons/MoneyIcon';
-import { LocationIcon } from '@/components/icons/LocationIcon';
 import { CalendarIcon } from '@/components/icons/CalendarIcon';
 import { TimeIcon } from '@/components/icons/TimeIcon';
 import { InfoCircleIcon } from '@/components/icons/InfoCircleIcon';
-import { SquareArrowUpIcon } from '@/components/icons/SquareArrowUpIcon';
-import { SquareArrowDownIcon } from '@/components/icons/SquareArrowDownIcon';
+import { ExchangeIcon } from '@/components/icons/ExchangeIcon';
+import { MapIcon } from '@/components/icons/MapIcon';
+import { DashedIcon } from '@/components/icons/DashedIcon';
+import { RightArrowIcon } from '@/components/icons/RightArrowIcon';
 
-const HEADER_HEIGHT = 375;
+const HEADER_HEIGHT = 555;
 const { width: screenWidth } = Dimensions.get('window');
 
 const COLORS = {
   primary: '#55B086',
+  danger: '#FF693B',
   background: '#FFFFFF',
   backgroundWrapper: '#F5F5F5',
   text: '#212121',
@@ -42,21 +34,11 @@ const COLORS = {
   subtitle: '#616161',
   inputBorder: '#EEEEEE',
   iconBackground: '#F0F0F0',
-  facebook: '#1877F2',
-  google: '#DB4437',
 };
 
 export default function HomeScreen() {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
-  const [countryCode, setCountryCode] = useState('DE');
-  const [callingCode, setCallingCode] = useState('49');
-  const [country, setCountry] = useState<Country | null>(null);
-  const [withCallingCode, setWithCallingCode] = useState(true);
-  const [phone, setPhone] = useState('435436567');
-  const [name, setName] = useState('John Doe');
-  const [weight, setWeight] = useState('');
-  const [price, setPrice] = useState('');
   const [location, setLocation] = useState('');
   const [locationDropOff, setLocationDropOff] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -67,18 +49,11 @@ export default function HomeScreen() {
   const [regionDropOff, setRegionDropOff] = useState<Region | null>(null);
   const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState('map');
-  const [details, setDetails] = useState('');
-  const [detailsDropOff, setDetailsDropOff] = useState('');
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [showDateModal, setShowDateModal] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
-
-  const [nameDropOff, setNameDropOff] = useState('Gregory Smith');
-  const [phoneDropOff, setPhoneDropOff] = useState('701234567');
-  const [countryCodeDropOff, setCountryCodeDropOff] = useState('SE');
-  const [callingCodeDropOff, setCallingCodeDropOff] = useState('46');
-  const [countryDropOff, setCountryDropOff] = useState<Country | null>(null);
+  const [selectedCard, setSelectedCard] = useState<string | null>(null);
 
   const handleDateChange = (event: any, selectedDate: any) => {
     if (selectedDate) setDate(selectedDate);
@@ -95,30 +70,6 @@ export default function HomeScreen() {
 
   const formatTime = (t: Date) =>
     t.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
-  const onSelect = (country: Country) => {
-    setCountryCode(country.cca2);
-    setCallingCode(country.callingCode[0]);
-    setCountry(country);
-  };
-
-  const onSelectDropOff = (country: Country) => {
-    setCountryCodeDropOff(country.cca2);
-    setCallingCodeDropOff(country.callingCode[0]);
-    setCountryDropOff(country);
-  };
-
-  const [activeTab, setActiveTab] = useState('pickup');
-  const translateX = useSharedValue(0);
-
-  const switchTab = (tab: 'pickup' | 'dropoff') => {
-    setActiveTab(tab);
-    translateX.value = withTiming(tab === 'pickup' ? 0 : -screenWidth, { duration: 250 });
-  };
-
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
 
   useEffect(() => {
     StatusBar.setBarStyle('light-content');
@@ -236,6 +187,78 @@ export default function HomeScreen() {
     Keyboard.dismiss();
   };
 
+  const exchangeLocations = () => {
+    const tempLocation = location;
+    setLocation(locationDropOff);
+    setLocationDropOff(tempLocation);
+
+    const tempRegion = region;
+    setRegion(regionDropOff);
+    setRegionDropOff(tempRegion); 
+
+    const tempMarker = marker;
+    setMarker(markerDropOff);
+    setMarkerDropOff(tempMarker);
+  };
+
+  // Results
+  const [results, setResults] = useState([
+    {
+      id: '1',
+      name: 'Marvin McKinney',
+      price: 20,
+      from: '101 Kasr El Ainy Street P.O. 11516 Cairo, Egypt',
+      to: 'Egypt, CairoLekki phase 1, 23480',
+      date: '11 Apr 2025',
+      avatar: '',
+    },
+    {
+      id: '2',
+      name: 'Gregory Smith',
+      price: 80,
+      from: 'Algeria, Algiers',
+      to: 'Tunisia, Djerba',
+      date: '12 Apr 2025',
+      avatar: '',
+    },
+    {
+      id: '3',
+      name: 'Jhon doe',
+      price: 50,
+      from: 'Algeria, Algiers',
+      to: 'Morocco, Rabat',
+      date: '15 Apr 2025',
+      avatar: '',
+    },
+    {
+      id: '4',
+      name: 'Marvin McKinney',
+      price: 20,
+      from: 'Algeria, Algiers',
+      to: 'Egypt, Cairo',
+      date: '11 Apr 2025',
+      avatar: '',
+    },
+    {
+      id: '5',
+      name: 'Gregory Smith',
+      price: 80,
+      from: 'Algeria, Algiers',
+      to: 'Tunisia, Djerba',
+      date: '12 Apr 2025',
+      avatar: '',
+    },
+    {
+      id: '6',
+      name: 'Jhon doe',
+      price: 50,
+      from: 'Algeria, Algiers',
+      to: 'Morocco, Rabat',
+      date: '15 Apr 2025',
+      avatar: '',
+    },
+  ]);
+
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -266,144 +289,37 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}>
         <Animated.View style={[styles.header]}>
           <View style={styles.headerTopContent}>
-            <Image source={require('@/assets/images/icon.png')} style={styles.logo} />
-            <Text style={styles.appName}>Welcome to PiqDrop.{'\n'}We value you.</Text>
+            <View style={styles.senderProfileImageContainer}>
+              <Image source={require('@/assets/img/profile-blank.png')} style={styles.senderProfileImage} />
+            </View>
+            <View style={styles.senderProfileTextContainer}> 
+              <Text style={styles.title}>Welcome back</Text>
+              <Text style={styles.subtitle}>User name</Text>
+            </View>
             <TouchableOpacity style={styles.bellIcon} onPress={() => router.push('/(tabs)/notification')}>
               <BellIcon size={44} color="white" />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/orderDetail')}>
-            <Text style={styles.loginText}>Send package</Text>
-          </TouchableOpacity>
-          {/* Toggle Buttons */}
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tabButton, activeTab === 'pickup' && styles.activeButton]}
-              onPress={() => switchTab('pickup')}
-            >
-              <SquareArrowUpIcon size={20} color={COLORS.background} />
-              <Text style={styles.tabText}>
-                Pick-up details
-              </Text>
-            </TouchableOpacity>
+          <Text style={styles.textWhereToTravel}>Where do you want 
+          to <Text style={styles.textWhereToTravelBold}>travel</Text>?</Text>
 
-            <TouchableOpacity
-              style={[styles.tabButton, activeTab === 'dropoff' && styles.activeButton]}
-              onPress={() => switchTab('dropoff')}
-            >
-              <SquareArrowDownIcon size={20} color={COLORS.background} />
-              <Text style={styles.tabText}>
-                Drop-off details
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-
-        <View style={styles.form}>
-          {/* Sliding Content */}
-          <View style={styles.sliderContainer}>
-            <Animated.View style={[styles.animatedView, animatedStyles]}>
-              <View style={styles.tabContent}>
-
-                <View style={styles.senderProfileContainer}> 
-                  <View style={styles.senderProfileImageContainer}>
-                    <Image source={require('@/assets/img/profile-blank.png')} style={styles.senderProfileImage} />
-                  </View>
-                  <View style={styles.senderProfileTextContainer}> 
-                    <Text style={styles.title}>{name}</Text>
-                    <Text style={styles.subtitle}>Sender</Text>
-                  </View>
-                </View>
-                
-                <Text style={styles.label}>Name</Text>
-                <View style={styles.inputContainer}>
-                  <UserRoundedIcon size={20} color={COLORS.text} />
-                  <TextInput 
-                    placeholder="Name" 
-                    value={name}  
-                    onChangeText={setName} 
-                    style={styles.input} 
-                    textContentType="name" 
-                    autoCapitalize="words" 
-                    clearButtonMode="always" 
-                    selectionColor={COLORS.primary} 
-                    returnKeyType="done"
-                    onSubmitEditing={handleReturnKey}
-                    />
-                </View>
-
-                <Text style={styles.label}>Number</Text>
-                <View style={styles.inputContainer}>
-                  <CountryPicker
-                    countryCode={countryCode as Country["cca2"]}
-                    withFilter
-                    withFlag
-                    withCallingCode
-                    withAlphaFilter
-                    withCallingCodeButton
-                    withModal
-                    onSelect={onSelect}
-                  />
-                  <SelectDownArrowIcon size={16} color={COLORS.text} /> 
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Phone number"
-                    keyboardType="phone-pad"
-                    value={phone}
-                    onChangeText={setPhone}
-                    textContentType="telephoneNumber"
-                    selectionColor={COLORS.primary}
-                    clearButtonMode="always"
-                    returnKeyType="done"
-                    onSubmitEditing={handleReturnKey}
-                  />
-                </View>
-              
-                <View style={styles.rowContainer}>
-                  <View style={styles.rowItem}>
-                    <Text style={styles.label}>Weight</Text>
-                    <View style={styles.inputContainer}>
-                      <WeightIcon size={20} color={COLORS.text} /> 
-                      <TextInput 
-                        placeholder="Weight" 
-                        value={weight} 
-                        onChangeText={setWeight} 
-                        style={styles.input} 
-                        keyboardType="numeric" 
-                        returnKeyType="done" 
-                        onSubmitEditing={handleReturnKey} />
-                    </View>
-                  </View>
-                  <View style={styles.rowItem}>
-                    <Text style={styles.label}>Price</Text>
-                    <View style={styles.inputContainer}>
-                      <MoneyIcon size={20} color={COLORS.text} />
-                      <TextInput 
-                        placeholder="Price" 
-                        value={price} 
-                        onChangeText={setPrice} 
-                        style={styles.input} 
-                        keyboardType="numeric" 
-                        returnKeyType="done" 
-                        onSubmitEditing={handleReturnKey} />
-                    </View>
-                  </View>
-                </View>
-
-                <Text style={styles.label}>Location</Text>
-                <View style={styles.inputContainer}>
-                  <TouchableOpacity onPress={() => setModalVisible(true)}>
-                    <LocationIcon size={20} color={COLORS.text} /> 
-                  </TouchableOpacity>
-                  <TextInput 
-                    placeholder="Location" 
-                    value={location} 
-                    onChangeText={setLocation} 
-                    style={styles.input} 
-                    editable={false}
-                    onPress={() => setModalVisible(true)}
-                  />
-
+          <Text style={styles.label}>Location</Text>
+          <View style={styles.cardContainer}>
+            <View style={styles.mapPinContainer}>
+              <MapIcon size={24} color={COLORS.primary} />
+              <DashedIcon />
+              <MapIcon size={24} color={COLORS.danger} />
+            </View>
+            <View style={styles.itemRowContainer}>
+              <View style={styles.itemRow}>                          
+                <TouchableOpacity style={styles.inputContainer} onPress={() => setModalVisible(true)}>
+                  <Text style={[
+                    styles.input,
+                    !location && { color: COLORS.textSecondary }
+                  ]}>
+                    {location || 'Street address'}
+                  </Text>
+                </TouchableOpacity>
                   <Modal visible={modalVisible} animationType="slide">
                     <View style={{ flex: 1 }}>
                       {/* Map View */}
@@ -473,246 +389,197 @@ export default function HomeScreen() {
                       </View>
                     </View>
                   </Modal>
-                </View>
+                <TouchableOpacity style={styles.inputContainer} onPress={() => setModalDropOffVisible(true)}>
+                  <Text style={[
+                    styles.input,
+                    !locationDropOff && { color: COLORS.textSecondary }
+                  ]}>
+                    {locationDropOff || 'Arrival address'}
+                  </Text>
+                </TouchableOpacity>
+                <Modal visible={modalDropOffVisible} animationType="slide">
+                  <View style={{ flex: 1 }}>
+                    {/* Map View */}
+                    {mode === 'map' && (
+                      <>
+                        {regionDropOff && (
+                          <>
+                          <MapView
+                            style={{ flex: 1 }}
+                            initialRegion={regionDropOff || {
+                              latitude: 0,
+                              longitude: 0,
+                              latitudeDelta: 0.01,
+                              longitudeDelta: 0.01,
+                            }}
+                            onPress={handleMapPressDropOff}
+                          >
+                            {markerDropOff && <Marker coordinate={markerDropOff} />}
+                          </MapView>
+                          <Text style={styles.mapHint}>Tap on the map to select location</Text>
+                          </>
+                        )}
+                      </>
+                    )}
 
-                <Text style={styles.label}>More details</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput 
-                    placeholder="Write here..." 
-                    value={details} 
-                    onChangeText={setDetails} 
-                    style={styles.input} 
-                    clearButtonMode="always"
-                    selectionColor={COLORS.primary}
-                    returnKeyType="done"
-                    onSubmitEditing={handleReturnKey}
-                  />
-                </View>
-
-                <Text style={styles.label}>Pickup date and location</Text>
-                <View style={styles.rowContainer}>
-                  <View style={styles.rowItem}>
-                    <Pressable onPress={() => setShowDateModal(true)} style={styles.inputContainer}>
-                      <CalendarIcon size={20} color={COLORS.text} /> 
-                      <Text style={styles.input}>{formatDate(date) || 'Select Date'}</Text>
-                    </Pressable>
-                  </View>
-                  <View style={styles.rowItem}>
-                    <Pressable onPress={() => setShowTimeModal(true)} style={styles.inputContainer}>
-                      <TimeIcon size={20} color={COLORS.text} />
-                      <Text style={styles.input}>{formatTime(time) || 'Select Time'}</Text>
-                    </Pressable>
-                  </View>
-                </View>
-                <View style={styles.infoContainer}>
-                  <InfoCircleIcon size={14} color={COLORS.text} />
-                  <Text style={styles.infoText}>Time zone is based on pickup location</Text>
-                </View>
-
-                {/* Date Modal */}
-                <Modal visible={showDateModal} transparent animationType="slide">
-                  <View style={styles.modalBackground}>
-                    <View style={styles.modalContainer}>
-                      <DateTimePicker
-                        value={date}
-                        mode="date"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-                        onChange={handleDateChange}
-                        style={styles.picker}
-                      />
-                      <TouchableOpacity onPress={() => setShowDateModal(false)} style={styles.modalButton}>
-                        <Text style={styles.modalButtonText}>Done</Text>
+                    {/* Manual Entry */}
+                    {mode === 'manual' && (
+                      <View style={styles.manualContainer}>
+                        <TextInput
+                          placeholder="Type address here"
+                          value={locationDropOff}
+                          onChangeText={setLocationDropOff}
+                          style={styles.manualInput}
+                          multiline
+                          autoCapitalize="words"
+                          autoComplete="off"
+                          clearButtonMode="always"
+                          textContentType="fullStreetAddress"
+                          selectionColor={COLORS.primary}
+                          returnKeyType="done"
+                          blurOnSubmit={true}
+                          onSubmitEditing={handleReturnKey}
+                        />
+                      </View>
+                    )}
+                    {/* Mode switch buttons */}
+                    <View style={styles.toggleContainer}>
+                      <TouchableOpacity
+                        style={[styles.toggleButton, mode === 'map' && styles.activeToggle]}
+                        onPress={() => setMode('map')}
+                      >
+                        <Text style={styles.toggleText}>Pick from Map</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.toggleButton, mode === 'manual' && styles.activeToggle]}
+                        onPress={() => setMode('manual')}
+                      >
+                        <Text style={styles.toggleText}>Enter Manually</Text>
+                      </TouchableOpacity>
+                    </View>
+                    <View style={styles.footer}>
+                      <TouchableOpacity style={[styles.toggleButton, {backgroundColor: COLORS.primary, width: 160, alignSelf: 'center'}]} 
+                        onPress={() => setModalDropOffVisible(false)}
+                      >
+                        <Text style={styles.toggleText}>Use This Address</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
                 </Modal>
-
-                {/* Time Modal */}
-                <Modal visible={showTimeModal} transparent animationType="slide">
-                  <View style={styles.modalBackground}>
-                    <View style={styles.modalContainer}>
-                      <DateTimePicker
-                        value={time}
-                        mode="time"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={handleTimeChange}
-                        style={styles.picker}
-                      />
-                      <TouchableOpacity onPress={() => setShowTimeModal(false)} style={styles.modalButton}>
-                        <Text style={styles.modalButtonText}>Done</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </Modal>
-
-                <TouchableOpacity style={[styles.loginButton, {marginTop: 35, marginBottom: 90}]} onPress={() => router.push('/(tabs)')}>
-                  <Text style={styles.loginText}>Post Job</Text>
-                </TouchableOpacity>
-
               </View>
-              <View style={styles.tabContent}>
-
-                <View style={styles.senderProfileContainer}> 
-                  <View style={styles.senderProfileImageContainer}>
-                    <Image source={require('@/assets/img/profile-blank.png')} style={styles.senderProfileImage} />
-                  </View>
-                  <View style={styles.senderProfileTextContainer}> 
-                    <Text style={styles.title}>{nameDropOff}</Text>
-                    <Text style={styles.subtitle}>Receiver</Text>
-                  </View>
-                  <Text style={styles.dropOffText}>Drop off</Text>
-                </View>
-
-                <Text style={styles.label}>Name</Text>
-                <View style={styles.inputContainer}>
-                  <UserRoundedIcon size={20} color={COLORS.text} />
-                  <TextInput 
-                    placeholder="Name" 
-                    value={nameDropOff} 
-                    onChangeText={setNameDropOff} 
-                    style={styles.input} 
-                    textContentType="name" 
-                    autoCapitalize="words" 
-                    clearButtonMode="always"
-                    selectionColor={COLORS.primary}
-                    returnKeyType="done"
-                    onSubmitEditing={handleReturnKey} 
-                    />
-                </View>
-
-                <Text style={styles.label}>Number</Text>
-                <View style={styles.inputContainer}>
-                  <CountryPicker
-                    countryCode={countryCodeDropOff as Country["cca2"]}
-                    withFilter
-                    withFlag
-                    withCallingCode
-                    withAlphaFilter
-                    withCallingCodeButton
-                    withModal
-                    onSelect={onSelectDropOff}
-                  />
-                  <SelectDownArrowIcon size={16} color={COLORS.text} /> 
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Phone number"
-                    keyboardType="phone-pad"
-                    value={phoneDropOff}
-                    onChangeText={setPhoneDropOff}
-                    textContentType="telephoneNumber"
-                    selectionColor={COLORS.primary}
-                    clearButtonMode="always"
-                    returnKeyType="done"
-                    onSubmitEditing={handleReturnKey}
-                  />
-                </View>
-
-                <Text style={styles.label}>Location</Text>
-                <View style={styles.inputContainer}>
-                  <TouchableOpacity onPress={() => setModalDropOffVisible(true)}>
-                    <LocationIcon size={20} color={COLORS.text} /> 
-                  </TouchableOpacity>
-                  <TextInput 
-                    placeholder="Location" 
-                    value={locationDropOff} 
-                    onChangeText={setLocationDropOff} 
-                    style={styles.input} 
-                    editable={false}
-                    onPress={() => setModalDropOffVisible(true)}
-                  />
-
-                  <Modal visible={modalDropOffVisible} animationType="slide">
-                    <View style={{ flex: 1 }}>
-                      {/* Map View */}
-                      {mode === 'map' && (
-                        <>
-                          {regionDropOff && (
-                            <>
-                            <MapView
-                              style={{ flex: 1 }}
-                              initialRegion={regionDropOff || {
-                                latitude: 0,
-                                longitude: 0,
-                                latitudeDelta: 0.01,
-                                longitudeDelta: 0.01,
-                              }}
-                              onPress={handleMapPressDropOff}
-                            >
-                              {markerDropOff && <Marker coordinate={markerDropOff} />}
-                            </MapView>
-                            <Text style={styles.mapHint}>Tap on the map to select location</Text>
-                            </>
-                          )}
-                        </>
-                      )}
-
-                      {/* Manual Entry */}
-                      {mode === 'manual' && (
-                        <View style={styles.manualContainer}>
-                          <TextInput
-                            placeholder="Type address here"
-                            value={locationDropOff}
-                            onChangeText={setLocationDropOff}
-                            style={styles.manualInput}
-                            multiline
-                            autoCapitalize="words"
-                            autoComplete="off"
-                            clearButtonMode="always"
-                            textContentType="fullStreetAddress"
-                            selectionColor={COLORS.primary}
-                            returnKeyType="done"
-                            blurOnSubmit={true}
-                            onSubmitEditing={handleReturnKey}
-                          />
-                        </View>
-                      )}
-                      {/* Mode switch buttons */}
-                      <View style={styles.toggleContainer}>
-                        <TouchableOpacity
-                          style={[styles.toggleButton, mode === 'map' && styles.activeToggle]}
-                          onPress={() => setMode('map')}
-                        >
-                          <Text style={styles.toggleText}>Pick from Map</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[styles.toggleButton, mode === 'manual' && styles.activeToggle]}
-                          onPress={() => setMode('manual')}
-                        >
-                          <Text style={styles.toggleText}>Enter Manually</Text>
-                        </TouchableOpacity>
-                      </View>
-                      <View style={styles.footer}>
-                        <TouchableOpacity style={[styles.toggleButton, {backgroundColor: COLORS.primary, width: 160, alignSelf: 'center'}]} 
-                          onPress={() => setModalDropOffVisible(false)}
-                        >
-                          <Text style={styles.toggleText}>Use This Address</Text>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  </Modal>
-                </View>
-
-                <Text style={styles.label}>More details</Text>
-                <View style={styles.inputContainer}>
-                  <TextInput 
-                    placeholder="Write here..." 
-                    value={detailsDropOff} 
-                    onChangeText={setDetailsDropOff} 
-                    style={styles.input} 
-                    clearButtonMode="always"
-                    selectionColor={COLORS.primary}
-                    returnKeyType="done"
-                    onSubmitEditing={handleReturnKey}
-                  />
-                </View>
-                <TouchableOpacity style={[styles.loginButton, {marginTop: 35, marginBottom: 27}]} onPress={() => router.push('/(tabs)')}>
-                  <Text style={styles.loginText}>Post Job</Text>
-                </TouchableOpacity>
-
-              </View>
-            </Animated.View>
+            </View>
+            <TouchableOpacity onPress={() => exchangeLocations()}>
+              <ExchangeIcon size={20} color={COLORS.primary} />
+            </TouchableOpacity>
           </View>
 
+          <Text style={styles.label}>Pickup date and location</Text>
+          <View style={styles.rowContainer}>
+            <View style={styles.rowItem}>
+              <TouchableOpacity onPress={() => setShowDateModal(true)} style={styles.inputContainer}>
+                <CalendarIcon size={20} color={COLORS.primary} /> 
+                <Text style={styles.input}>{formatDate(date) || 'Select Date'}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.rowItem}>
+              <TouchableOpacity onPress={() => setShowTimeModal(true)} style={styles.inputContainer}>
+                <TimeIcon size={20} color={COLORS.primary} />
+                <Text style={styles.input}>{formatTime(time) || 'Select Time'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.infoContainer}>
+            <InfoCircleIcon size={12} color="#84BEFF" />
+            <Text style={styles.infoText}>Time zone is based on pickup location</Text>
+          </View>
+
+          {/* Date Modal */}
+          <Modal visible={showDateModal} transparent animationType="slide">
+            <View style={styles.modalBackground}>
+              <View style={styles.modalContainer}>
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
+                  onChange={handleDateChange}
+                  style={styles.picker}
+                />
+                <TouchableOpacity onPress={() => setShowDateModal(false)} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Done</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          {/* Time Modal */}
+          <Modal visible={showTimeModal} transparent animationType="slide">
+            <View style={styles.modalBackground}>
+              <View style={styles.modalContainer}>
+                <DateTimePicker
+                  value={time}
+                  mode="time"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  onChange={handleTimeChange}
+                  style={styles.picker}
+                />
+                <TouchableOpacity onPress={() => setShowTimeModal(false)} style={styles.modalButton}>
+                  <Text style={styles.modalButtonText}>Done</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/?refresh=true')}>
+            <Text style={styles.loginText}>Search package</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        <View style={styles.form}>
+          {/* Results */}
+          <Text style={styles.resultsLabel}>Available pick & drop</Text>
+          <View style={{ flex: 1 }}>
+            {results.map((item) => (
+              <TouchableOpacity 
+                key={item.id}
+                style={[
+                  styles.resultCard,
+                  selectedCard === item.id && styles.resultCardSelected
+                ]}
+                onPress={() => setSelectedCard(item.id)}
+              >
+                {/* Order Summary Card */}
+                <View style={styles.orderSummaryCard}>
+                  <View style={styles.orderSummaryRow}>
+                    {item.avatar && <Image source={item.avatar} style={styles.resultAvatar} />}
+                    {!item.avatar && <View style={styles.userAvatar} />}
+                    <View style={styles.orderSummaryUserRow}>
+                      <Text style={styles.orderSummaryUserName}>{item.name}</Text>
+                      <View style={styles.orderSummaryPriceBox}>
+                        <Text style={styles.orderSummaryPrice}>${item.price.toFixed(2)}</Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity style={styles.orderSummaryArrow} onPress={() => router.push('/orderDetail')}>
+                      <RightArrowIcon size={16} color={COLORS.background} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <View style={styles.pickupDetailsCard}>
+                  <View style={styles.pickupDetailsRow}>
+                    <Text style={styles.pickupDetailsLabel}>From:</Text>
+                    <Text style={styles.pickupDetailsValue}>{item.from}</Text>
+                  </View>
+                  <View style={styles.pickupDetailsRow}>
+                    <Text style={styles.pickupDetailsLabel}>To:</Text>
+                    <Text style={styles.pickupDetailsValue}>{item.to}</Text>
+                  </View>
+                  <View style={styles.pickupDetailsRow}>
+                    <Text style={styles.pickupDetailsLabel}>Date:</Text>
+                    <Text style={styles.pickupDetailsValue}>{item.date}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </Animated.ScrollView>
     </KeyboardAvoidingView>
@@ -740,7 +607,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 32,
+    marginBottom: 28,
   },
   logo: {
     width: 38,
@@ -774,8 +641,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   senderProfileImageContainer: {
-    width: 48,
-    height: 48,
+    width: 38,
+    height: 38,
     borderRadius: 12,
     overflow: 'hidden',
   },
@@ -785,26 +652,29 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   senderProfileTextContainer: {
-    marginLeft: 14,
+    marginLeft: 12,
+    flex: 1,
   },
   form: {
     flex: 1,
-    paddingTop: 28,
-    paddingBottom: 22,
+    paddingTop: 20,
+    paddingBottom: 86,
     paddingHorizontal: 16,
     backgroundColor: COLORS.backgroundWrapper,
   },
   title: {
-    fontSize: 18,
-    fontFamily: 'nunito-bold',
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: 'nunito-regular',
     letterSpacing: 0.2,
-    marginBottom: 6,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   subtitle: {
-    fontSize: 14,
-    fontFamily: 'nunito-medium',
-    color: COLORS.subtitle,
+    fontSize: 16,
+    lineHeight: 24,
+    fontFamily: 'nunito-bold',
     letterSpacing: 0.2,
+    color: COLORS.background,
     marginBottom: 0,
   },
   dropOffText: {
@@ -828,26 +698,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    marginTop: 18,
+    marginBottom: 16,
     fontFamily: 'nunito-bold',
-    fontSize: 14,
+    fontSize: 16,
+    lineHeight: 22,
+    letterSpacing: 0.2,
+    color: COLORS.background,
   },
   inputContainer: {
     flexDirection: 'row',
-    backgroundColor: COLORS.background,
-    borderRadius: 14,
-    paddingHorizontal: 15,
+    backgroundColor: '#25282B',
+    borderRadius: 12,
+    paddingHorizontal: 10,
     alignItems: 'center',
-    marginTop: 13,
-    height: 54,
+    height: 44,
+    gap: 15,
   },
   input: {
     flex: 1,
-    marginLeft: 10,
-    fontFamily: 'nunito-medium',
-    fontSize: 16,
-    paddingVertical: 15,
-    color: COLORS.text,
+    fontFamily: 'nunito-regular',
+    fontSize: 14,
+    lineHeight: 20,
+    paddingVertical: 12,
+    letterSpacing: 0.2,
+    color: COLORS.background,
   },
   loginButton: {
     backgroundColor: COLORS.primary,
@@ -939,12 +813,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
     marginTop: 14,
+    marginBottom: 20,
   },
   infoText: {
     fontSize: 12,
     fontFamily: 'nunito-medium',
-    color: COLORS.textSecondary,
     letterSpacing: 0.2,
+    lineHeight: 18,
+    color: "#84BEFF",
   },
   tabContainer: {
     flexDirection: 'row',
@@ -986,6 +862,155 @@ const styles = StyleSheet.create({
   tabContent: {
     width: screenWidth - 32,
   },
-  
+  textWhereToTravel: {
+    fontSize: 24,
+    lineHeight: 32,
+    fontFamily: 'nunito-bold',
+    letterSpacing: 0.2,
+    color: COLORS.background,
+    marginBottom: 16,
+  },
+  textWhereToTravelBold: {
+    color: COLORS.primary,
+  },
+  itemRowContainer: {
+    flex: 1,
+  },
+  itemRow: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    position: 'relative',
+    gap: 14,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 18,
+    flex: 1,
+    marginBottom: 24,
+  },
+  mapPinContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+  },
+  resultsLabel: {
+    color: COLORS.text,
+    fontFamily: 'nunito-extrabold',
+    fontSize: 16,
+    letterSpacing: 0.2,
+    lineHeight: 22,
+    textAlign: 'center',
+    marginBottom: 14,
+  },
+  resultCard: {
+    backgroundColor: COLORS.background,
+    borderRadius: 14,
+    flexDirection: 'column',
+    padding: 14,
+    marginBottom: 16,
+    gap: 14,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  resultCardSelected: {
+    borderColor: COLORS.primary,
+    borderWidth: 1.5,
+  },
+  resultAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+  },
+  orderSummaryCard: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
+    paddingBottom: 14,
+    marginBottom: 14,
+  },
+  orderSummaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 14,
+    alignItems: 'center',
+    marginBottom: 0,
+  },
+  orderSummaryUserRow: {
+    flex: 1,
+  },
+  userAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: '#D9D9D9',
+  },
+  orderSummaryUserName: {
+    fontFamily: 'nunito-bold',
+    fontSize: 16,
+    letterSpacing: 0.2,
+    color: COLORS.text,
+    marginBottom: 8,
+  },
+  orderSummaryPriceBox: {
+    backgroundColor: '#EEEEEE',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    alignSelf: 'flex-start',
+  },
+  orderSummaryPrice: {
+    fontFamily: 'nunito-bold',
+    fontSize: 14,
+    letterSpacing: 0.2,
+    color: COLORS.text,
+  },
+  pickupDetailsCard: {
+    flex: 1,
+    flexDirection: 'column',
+    gap: 6,
+  },
+  pickupDetailsTitle: {
+    fontFamily: 'nunito-bold',
+    fontSize: 16,
+    color: COLORS.text,
+    letterSpacing: 0.2,
+    marginBottom: 8,
+    marginLeft: 8,
+  },
+  pickupDetailsDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
+    marginBottom: 16,
+  },
+  pickupDetailsRow: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  pickupDetailsLabel: {
+    fontFamily: 'nunito-medium',
+    fontSize: 14,
+    letterSpacing: 0.2,
+    lineHeight: 16,
+    width: 100,
+    color: COLORS.subtitle,
+  },
+  pickupDetailsValue: {
+    color: COLORS.text,
+    fontFamily: 'nunito-semibold',
+    fontSize: 14,
+    letterSpacing: 0.2,
+    lineHeight: 16,
+    flex: 1,
+    textAlign: 'right',
+  },
+  orderSummaryArrow: {  
+    width: 24,
+    height: 24,
+    backgroundColor: COLORS.primary,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
