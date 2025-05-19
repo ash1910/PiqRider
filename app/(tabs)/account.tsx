@@ -280,7 +280,7 @@ export default function AccountScreen() {
               <View style={styles.sectionLine} />
             </View>
             <View style={styles.card}>
-              <TouchableOpacity style={styles.row}>
+              <TouchableOpacity style={styles.row} onPress={() => router.push('/wallet')}>
                 <View style={styles.rowLeft}>
                   <WalletIcon size={20} color={COLORS.text} />
                   <Text style={styles.rowLabel}>Wallet</Text>

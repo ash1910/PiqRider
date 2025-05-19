@@ -165,7 +165,7 @@ export default function RegisterScreen() {
             <UserRoundedIcon size={20} color={COLORS.text} />
             <TextInput 
               ref={firstNameInputRef}
-              placeholder="Name" 
+              placeholder="First Name" 
               style={styles.input} 
               value={firstName}
               onChangeText={setFirstName}
@@ -185,7 +185,7 @@ export default function RegisterScreen() {
           <View style={styles.inputContainer}>
             <UserRoundedIcon size={20} color={COLORS.text} />
             <TextInput 
-              placeholder="Name" 
+              placeholder="Last Name" 
               ref={lastNameInputRef}
               style={styles.input} 
               value={lastName}
